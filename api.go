@@ -12,8 +12,8 @@ type dsFactory func(string) *datastore.Datastore
 type apiMethodHandler func(dsFactory, json.RawMessage) (interface{}, error)
 
 var (
-	notFoundErr      = errors.New("NOT_FOUND")
-	jsonUnmarshalErr = errors.New("JSON_UNMARSHAL_ERROR")
+	errNotFound      = errors.New("NOT_FOUND")
+	errJsonUnmarshal = errors.New("JSON_UNMARSHAL_ERROR")
 )
 
 func account_get(dsFactory dsFactory, params json.RawMessage) (interface{}, error) {
@@ -22,12 +22,12 @@ func account_get(dsFactory dsFactory, params json.RawMessage) (interface{}, erro
 	}{}
 	jsonErr := json.Unmarshal(params, &reqParams)
 	if jsonErr != nil {
-		return nil, jsonUnmarshalErr
+		return nil, errJsonUnmarshal
 	}
 
 	ds := dsFactory(reqParams.Identifier)
 	if ds == nil {
-		return nil, notFoundErr
+		return nil, errNotFound
 	}
 
 	return ds.GetAccount(), nil
@@ -39,12 +39,12 @@ func person_getforaccount(dsFactory dsFactory, params json.RawMessage) (interfac
 	}{}
 	jsonErr := json.Unmarshal(params, &reqParams)
 	if jsonErr != nil {
-		return nil, jsonUnmarshalErr
+		return nil, errJsonUnmarshal
 	}
 
 	ds := dsFactory(reqParams.Account_Identifier)
 	if ds == nil {
-		return nil, notFoundErr
+		return nil, errNotFound
 	}
 
 	return ds.GetPeople(), nil
@@ -56,12 +56,12 @@ func transaction_getforaccount(dsFactory dsFactory, params json.RawMessage) (int
 	}{}
 	jsonErr := json.Unmarshal(params, &reqParams)
 	if jsonErr != nil {
-		return nil, jsonUnmarshalErr
+		return nil, errJsonUnmarshal
 	}
 
 	ds := dsFactory(reqParams.Account_Identifier)
 	if ds == nil {
-		return nil, notFoundErr
+		return nil, errNotFound
 	}
 
 	return ds.GetTransactions(), nil
@@ -82,12 +82,12 @@ func transaction_add(dsFactory dsFactory, params json.RawMessage) (interface{}, 
 	}{}
 	jsonErr := json.Unmarshal(params, &reqParams)
 	if jsonErr != nil {
-		return nil, jsonUnmarshalErr
+		return nil, errJsonUnmarshal
 	}
 
 	ds := dsFactory(reqParams.Account_Identifier)
 	if ds == nil {
-		return nil, notFoundErr
+		return nil, errNotFound
 	}
 
 	newTransaction := model.Transaction{
@@ -99,7 +99,7 @@ func transaction_add(dsFactory dsFactory, params json.RawMessage) (interface{}, 
 	if transactionId > 0 {
 		_, found := ds.UpdateTransaction(transactionId, newTransaction)
 		if !found {
-			return nil, notFoundErr
+			return nil, errNotFound
 		}
 		ds.DeletePaymentsForTransaction(transactionId)
 	} else {
@@ -125,12 +125,12 @@ func transaction_get(dsFactory dsFactory, params json.RawMessage) (interface{}, 
 	}{}
 	jsonErr := json.Unmarshal(params, &reqParams)
 	if jsonErr != nil {
-		return nil, jsonUnmarshalErr
+		return nil, errJsonUnmarshal
 	}
 
 	ds := dsFactory(reqParams.Account_Identifier)
 	if ds == nil {
-		return nil, notFoundErr
+		return nil, errNotFound
 	}
 
 	return ds.GetTransactionById(reqParams.Id), nil
@@ -143,12 +143,12 @@ func transaction_getpayments(dsFactory dsFactory, params json.RawMessage) (inter
 	}{}
 	jsonErr := json.Unmarshal(params, &reqParams)
 	if jsonErr != nil {
-		return nil, jsonUnmarshalErr
+		return nil, errJsonUnmarshal
 	}
 
 	ds := dsFactory(reqParams.Account_Identifier)
 	if ds == nil {
-		return nil, notFoundErr
+		return nil, errNotFound
 	}
 
 	return ds.GetPaymentsForTransaction(reqParams.Id), nil
@@ -161,12 +161,12 @@ func transaction_delete(dsFactory dsFactory, params json.RawMessage) (interface{
 	}{}
 	jsonErr := json.Unmarshal(params, &reqParams)
 	if jsonErr != nil {
-		return nil, jsonUnmarshalErr
+		return nil, errJsonUnmarshal
 	}
 
 	ds := dsFactory(reqParams.Account_Identifier)
 	if ds == nil {
-		return nil, notFoundErr
+		return nil, errNotFound
 	}
 
 	ds.DeleteTransactionById(reqParams.Id)
