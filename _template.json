@@ -1,0 +1,15 @@
+{
+    "Identifier": "somemd5",
+    "Account": {
+        "name": "A Name",
+        "currency": "£"
+    },
+    "People": {
+        "1": {"id": 1, "name": "A Person", "balance": 0 }
+    },
+    "Transactions": {
+    },
+    "Payments": {
+    },
+    "Autoincrement": 60
+}
